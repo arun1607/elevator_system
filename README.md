@@ -7,5 +7,11 @@ output the lift position on console.
 
 ##### Command line
 
-Use mvn 
+Use `mvn clean package`
+
+`java -jar target/elevator-system-1.0.0.jar`
+
+##### Sample output 
+
+
 

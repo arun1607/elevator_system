@@ -1,6 +1,5 @@
 package com.app.learning;
 
-import java.io.File;
 import java.util.Comparator;
 import java.util.Queue;
 
@@ -17,13 +16,11 @@ public class Elevator implements Runnable {
     private volatile int timer = 0;
     private static final int QUEUE_CAPACITY = 10;
     private ElevatorEventCallback elevatorEventCallback;
-    private File outputFile = null;
 
     public Elevator(int maxFloors, String liftNumber, ElevatorEventCallback elevatorEventCallback) {
         this.maxFloors = maxFloors;
         this.elevatorEventCallback = elevatorEventCallback;
         this.liftNumber = liftNumber;
-        outputFile = new File("output_" + liftNumber);
     }
 
     public Elevator(int maxFloors, String liftNumber) {
@@ -59,7 +56,6 @@ public class Elevator implements Runnable {
         }
     }
 
-
     @Override
     public void run() {
         while (true) {
@@ -67,6 +63,7 @@ public class Elevator implements Runnable {
                 Integer destinationFloor = currentQueue.poll();
                 goToFloor(destinationFloor);
             }
+
             status = Status.STOPPED;
             if (elevatorEventCallback != null) {
                 elevatorEventCallback.queueProcessed();
@@ -87,16 +84,16 @@ public class Elevator implements Runnable {
         if (currentFloor != destinationFloor) {
             status = Status.MOVING;
             while (currentFloor < destinationFloor) {
+                displayStatus();
                 currentFloor++;
                 direction = Direction.UP;
                 timer++;
-                displayStatus();
             }
             while (currentFloor > destinationFloor) {
+                displayStatus();
                 currentFloor--;
                 direction = Direction.DOWN;
                 timer++;
-                displayStatus();
             }
             if (elevatorEventCallback != null) {
                 elevatorEventCallback.crossedFloor();
@@ -105,6 +102,11 @@ public class Elevator implements Runnable {
         }
         openDoor();
         closeDoor();
+        if (currentQueue.isEmpty()) {
+            direction = Direction.NONE;
+            System.out.println(String.format("LIFT %s --> T = %d ", liftNumber, timer));
+            timer = 0;
+        }
     }
 
 
